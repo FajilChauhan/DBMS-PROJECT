@@ -1,0 +1,162 @@
+
+1. List the name of top 3 players with most runs in Vijyay Hazare 2024.
+
+SELECT player_name , Cap_no , sum(runs) , team_name from matches as m
+join batting_scorecard as b on m.tournament_name=b.tournament_name and m.match_no=b.match_no where
+EXTRACT(YEAR FROM match_date)=2024 and m.tournament_name='Vijay Hazare Trophy' group by player_name,cap_no,team_name 
+order by sum(runs) desc limit 3;
+
+
+
+2. Who won the man of the match in final of IPL 2024.
+
+select mom_name,mom_capno from matches where match_stage='Final' and tournament_name='Indian Premier League'
+and extract(year from match_date)=2024;
+
+
+3.List the all teams in which given player played.
+
+select distinct team_name,tournament_name from team_info where player_name='Suyash Prabhudessai' and Cap_no=45;
+
+
+4.Print the all teams of IPL with descending order of 6s and 4s.
+
+select distinct team_name, sum(sixes) from batting_scorecard where tournament_name='Indian Premier League' 
+group by team_name order by sum(sixes) desc;
+
+
+5.Print the Team name, Highest Score of Kolkata Knight Riders team of IPL.
+
+select sum(runs) as highest from batting_scorecard where team_name='Kolkata Knight Riders' and tournament_name='Indian Premier League'
+group by team_name,tournament_name,match_no order by sum(runs) desc limit 1;
+
+
+6. Print the player name, match played, runs scored, batting average , strike 
+rate in 20 over matches in 2024 season of given player.
+
+select player_name,cap_no,count(match_no) as matches_p,sum(runs)as runs,avg(runs) as avg,100*avg(runs/balls_faced) as strike_rate from
+tournament natural join batting_scorecard where tournament_format='T20'and player_name='Virat Kohli' and cap_no=18
+group by player_name,cap_no;
+
+
+
+7.What is average age of squad of Mumbai in Vijay Hazare Trophy in 2024 season.
+
+select CAST(avg(extract(YEAR FROM AGE(DOB))) as NUMERIC(10,2)) as avg_age from team_info natural join player where team_name='Mumbai' 
+and tournament_name='Vijay Hazare Trophy';
+
+
+
+8.What is percentage of toss winning team is winning the match in eden Gardens , kolkata.
+
+select cast((count(case when toss=match_winner then 1 end) :: NUMERIC(10,2) / count(*) * 100) as numeric(10,2)) as percentage
+from matches where stadium_name='Eden Gardens' and city='Kolkata';
+
+
+
+9.Print head to head comparison between two given teams (which team 
+won how many time against each other).
+
+select count(case when match_winner='Royal Challengers Bangalore' then 1 end) as CSK,count(case when match_winner='Mumbai Indians' then 1 end) as MI from matches where (team1_name='Royal Challengers Bangalore' and team2_name='Mumbai Indians') or 
+(team1_name='Mumbai Indians' and team2_name='Royal Challengers Bangalore');
+
+
+
+10.List player name , runs, team of player with most runs in history of Syed Mushtaq Ali Trophy.
+
+select player_name,cap_no,team_name,sum(runs) from batting_scorecard where tournament_name='Syed Mushtaq Ali Trophy' 
+group by player_name,cap_no,team_name order by sum(runs) desc limit 1;
+
+
+11. Write top 5 batsman of Mumbai Indians (Run Wise in their career).
+
+select player_name,cap_no,runs from team_info natural join stats where team_name='Mumbai Indians' and tournament_name='Indian Premier League' and format='T20'
+order by Runs desc limit 5;
+
+
+12. print top 5 bowlers of Gujarat in Syed Mushtaq Ali Trophy.
+
+select player_name,cap_no,wickets from team_info natural join stats where team_name='Gujarat' and format='T20' and tournament_name='Syed Mushtaq Ali Trophy'
+order by wickets desc limit 5;
+
+
+13. print total matches win by ipl teams.
+
+select team_name,sum(wins) from team_performance where tournament_name='Indian Premier League' group by team_name 
+order by sum(wins) desc;
+
+
+
+14. print youngest player in mumbai vijay hazare trophy 2024.
+
+select player_name,cap_no, extract(YEAR FROM AGE(DOB)) as age from team_info natural join player where team_name='Mumbai' 
+and tournament_name='Vijay Hazare Trophy' and year=2024 order by age asc limit 1;
+
+
+15. print top 5 batsmans with most sixes in ipl 2024.
+
+select player_name,cap_no,team_name,sum(sixes) from batting_scorecard natural join matches where extract(YEAR from match_date)=2024 and tournament_name='Indian Premier League'
+group by player_name,cap_no,team_name order by sum(sixes) desc limit 5;
+
+
+
+16. what is average total of first batting team in eden gardens , kolkata.
+
+select avg(tot_score) from (select sum(runs) as tot_score from batting_scorecard natural join matches where stadium_name='Eden Gardens'
+and city='Kolkata' and ((team_name=toss and elected='Bat') or (team_name!=toss and elected='Field')) group by team_name,match_no) as avg_score;
+
+
+17. write country wise how many players are playing in IPL.
+
+select country,count(country) from team_info natural join player where tournament_name='Indian Premier League' and year=2024 group by country;
+
+
+
+18. is there any player in IPL 2024 who has scored more than 50 runs and took more than 2 wickets in single match ?
+
+select player_name,cap_no,team_name,runs,wickets from batting_scorecard natural join matches natural join bowling_scorecard where tournament_name='Indian Premier League' and extract(YEAR from match_date)=2024
+and runs >= 50 and wickets >= 2;
+
+
+
+19. List name of top 3 wicket takers in Vijay Hazare 2024.
+
+select player_name,cap_no,sum(wickets) as wickets,team_name from bowling_scorecard natural join matches where tournament_name='Vijay Hazare Trophy' and 
+extract(YEAR FROM match_date)=2024 group by player_name,cap_no,team_name order by sum(wickets) desc limit 3;
+
+
+
+20.List all players in a specific team:
+
+select player_name,cap_no from team_info where team_name='Gujarat' and tournament_name='Vijay Hazare Trophy' and year=2024;
+
+
+
+
+21. List all players who scored a century (100 runs or more) in a specific tournament:
+
+select player_name,cap_no,team_name from batting_scorecard natural join matches where tournament_name='Vijay Hazare Trophy' and extract(YEAR from match_date)=2024
+and runs >= 100;
+
+
+
+22. List the total runs scored and wickets taken by each team in Vijay Hazare Trophy :
+
+select team_name,sum(runs),sum(wickets) from batting_scorecard natural join matches natural join bowling_scorecard where tournament_name='Vijay Hazare Trophy' and extract(YEAR FROM match_date)=2024
+group by team_name;
+
+
+
+
+23. List the players who have both scored a fifty and taken a wicket in a single match in Vijay Hazare Trophy, along with their respective teams.
+
+select distinct player_name,cap_no,team_name from batting_scorecard natural join matches natural join bowling_scorecard where tournament_name='Vijay Hazare Trophy' and extract(YEAR FROM match_date)=2024
+and runs>=50 and wickets>=1;
+
+
+24. List the players who have scored more than 1000 runs and took more than 50 wickets. 
+
+select player_name,cap_no,runs,wickets from stats where runs>=1000 and wickets>=50 and format='T20';                                                                    
+
+
+

@@ -1,0 +1,155 @@
+create table Team(
+	Team_Name VARCHAR(45),
+	Tournament_Name VARCHAR(40),
+	Headcoach VARCHAR(25),
+	Captain_Name VARCHAR(45) NOT NULL,
+	Captain_CapNo INT NOT NULL,
+	Homeground VARCHAR(45) NOT NULL,
+	City VARCHAR(20) NOT NULL,
+	Year INT,
+	PRIMARY KEY(Team_Name,Tournament_Name),
+	FOREIGN KEY (Tournament_Name) REFERENCES Tournament(Tournament_Name)
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+create table Team_Performance(
+	Team_Name VARCHAR(45),
+	Tournament_Name VARCHAR(40),
+	Year INT,
+	Matches_Played INT,
+	Win INT,
+	Losses INT,
+	Draws INT,
+	PRIMARY KEY(Team_Name,Tournament_Name,Year),
+	FOREIGN KEY (Tournament_Name) REFERENCES Tournament(Tournament_Name)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (Tournament_Name,Team_Name) REFERENCES Team(Tournament_Name,Team_Name)
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+create table Team_Info(
+	Team_Name VARCHAR(45),
+	Tournament_Name VARCHAR(40),
+	Player_Name VARCHAR(45),
+	Cap_No INT,
+	Year INT,
+	PRIMARY KEY(Team_Name,Tournament_Name,Player_Name,Cap_No,Year),
+	FOREIGN KEY (Tournament_Name,Team_Name) REFERENCES Team(Tournament_Name,Team_Name)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (Player_Name,Cap_No) REFERENCES Player(Player_Name,Cap_No)
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+create table Playing_XI(
+	Team_Name VARCHAR(45),
+	Tournament_Name VARCHAR(40),
+	Match_No INT,
+	Player_Name VARCHAR(),
+	Cap_No INT,
+	PRIMARY KEY(Team_Name,Tournament_Name,Match_No,Player_Name,Cap_No),
+	FOREIGN KEY (Tournament_Name,Team_Name) REFERENCES Team(Tournament_Name,Team_Name)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (Tournament_Name,Match_No) REFERENCES Matches(Tournament_Name,Match_No)
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE Tournament(
+		
+	Tournament_Name VARCHAR(40) PRIMARY KEY,
+	Tournament_Format VARCHAR(25) NOT NULL
+);
+
+CREATE TABLE Tournament_Result(
+	
+	Tournament_Name VARCHAR(40),
+	Year INT,
+	Winner VARCHAR(45) NOT NULL,
+	Runner_Up VARCHAR(45) NOT NULL,
+	POTT_Name VARCHAR(45) NOT NULL,
+	POTT_CapNo INT NOT NULL,
+	PRIMARY KEY(Tournament_Name,Year),
+	FOREIGN KEY (Tournament_Name) REFERENCES Tournament(Tournament_Name) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE Player (
+	
+	Player_Name VARCHAR(45),
+	Cap_No INT,
+	DOB DATE NOT NULL,
+	Player_Type VARCHAR(35) NOT NULL,
+	Batting_Style VARCHAR(35) NOT NULL,
+	Bowling_Style VARCHAR(35) NOT NULL,
+	Country  VARCHAR(20),
+	PRIMARY KEY(Player_Name,Cap_No) 
+);
+
+CREATE TABLE Stats(
+		
+	Player_Name VARCHAR(45),
+	Cap_No INT,
+	Format VARCHAR(25),
+	Total_Matches INT,
+	Runs INT,
+	Fiftys INT,
+	Hundreds INT,
+	Wickets INT,
+	Batting_Best VARCHAR(7),
+	Bowling_Best VARCHAR(7),
+	PRIMARY KEY(Player_Name,Cap_No,Format),
+	FOREIGN KEY (Player_Name,Cap_No) REFERENCES Player(Player_Name,Cap_No)
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE Matches
+(
+	Tournament_Name VARCHAR(40),
+	Match_No INT,
+	Team1_Name VARCHAR(45) NOT NULL,
+	Team2_Name VARCHAR(45) NOT NULL,
+	Stadium_Name VARCHAR(45) NOT NULL,
+	City VARCHAR(45) NOT NULL,
+	Match_date DATE NOT NULL,
+	Match_Stage VARCHAR(15) NOT NULL,
+	Match_Winner VARCHAR(45),
+	MOM_Name VARCHAR(45),
+	MOM_CapNo INT,
+	Toss VARCHAR(45),
+	Elected VARCHAR(5),
+	primary key(Tournament_Name,Match_No),
+	FOREIGN KEY (Tournament_Name) REFERENCES Tournament(Tournament_Name) 
+	ON DELETE CASCADE ON UPDATE CASCADE
+	
+);
+
+CREATE TABLE Bowling_Scorecard
+(
+	Tournament_Name VARCHAR(40) ,
+	Match_No INT,
+	Team_Name VARCHAR(45),
+	Player_Name VARCHAR(45),
+	Cap_no INT,
+	Overs INT,
+	Maidens INT,
+	Wickets INT,
+	Run_Conceded INT,
+	primary key(Tournament_Name,Match_No,Team_Name,Player_Name,Cap_No),
+	FOREIGN KEY (Tournament_Name,Match_No) REFERENCES Matches(Tournament_Name,Match_No) 
+	ON DELETE CASCADE ON UPDATE CASCADE
+	
+);
+CREATE TABLE Batting_Scorecard
+(
+	Tournament_Name VARCHAR(40),
+	Match_No INT,
+	Team_Name VARCHAR(45),
+	Player_Name VARCHAR(20),
+	Cap_no INT,
+	Runs INT,
+	Balls_Faced INT,
+	Fours INT,
+	Sixes INT,
+	Notout INT,
+	primary key(Tournament_Name,Match_No,Team_Name,Player_Name,Cap_No),
+	FOREIGN KEY (Tournament_Name,Match_No) REFERENCES Matches(Tournament_Name,Match_No) 
+	ON DELETE CASCADE ON UPDATE CASCADE
+);
